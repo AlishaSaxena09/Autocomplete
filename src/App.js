@@ -4,6 +4,7 @@ import data from "./data.json";
 
 const App = () => {
   const [booksData, setBooksData] = useState({});
+  const [booksSummary, setBookSummary] = useState([]);
   const [searchText, setSearchText] = useState("");
 
   function getRandomColor() {
@@ -17,6 +18,7 @@ const App = () => {
 
   useEffect(() => {
     setBooksData(data);
+    setBookSummary(data.summaries);
   }, []);
 
   const handleInputChange = (e) => {
