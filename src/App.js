@@ -6,6 +6,8 @@ const App = () => {
   const [booksData, setBooksData] = useState({});
   const [booksSummary, setBookSummary] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedBooks, setSelectedBooks] = useState([]);
 
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
@@ -22,43 +24,99 @@ const App = () => {
   }, []);
 
   const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+
     setSearchText(e.target.value);
+    filterData(e.target.value);
+
+    if (inputValue === "") {
+      setSearchResults([]);
+    } else {
+      filterData(inputValue);
+    }
   };
 
-  const filteredTitles = booksData.titles
-    ? booksData.titles.filter((title) =>
-        title.toLowerCase().includes(searchText.toLowerCase())
-      )
-    : [];
+  const filterData = (searchItem) => {
+    const filteredTitles = booksData.titles
+      ? booksData.titles.filter((title) =>
+          title.toLowerCase().includes(searchItem.toLowerCase())
+        )
+      : [];
+    setSearchResults(filteredTitles);
+  };
+
+  const handleResultClick = (title) => {
+    if (!selectedBooks.includes(title)) {
+      setSelectedBooks([...selectedBooks, title]);
+    }
+  };
 
   return (
-    <div className="container flex flex-col items-center justify-center gap-4 p-4 m-auto App">
-      <h1 className="text-sm font-bold">Book Search App</h1>
+    <div className="flex flex-col items-center h-screen gap-4 p-4 m-auto bg-pink-100 App">
+      <h1 className="text-sm font-bold md:text-xl">Book Search App</h1>
       <div className="w-9/12 md:w-1/2">
         <input
           list="titles"
           placeholder="Search"
           value={searchText}
-          className="px-6 py-2 text-sm border-2 border-black rounded-lg"
+          className="w-full px-6 py-2 text-sm border-2 border-black rounded-lg"
           onChange={handleInputChange}
         />
-        <datalist id="titles">
-          {filteredTitles.map((title, index) => (
-            <option key={index} value={title} />
-          ))}
-        </datalist>
       </div>
-      <div className="flex flex-wrap items-center justify-center gap-4 py-4">
-        {filteredTitles.map((title, index) => {
+      <div className="flex flex-wrap items-center justify-center w-9/12 gap-4 py-4 md:w-1/2">
+        {searchResults.map((title, index) => {
+          const bookIndex = booksData.titles.findIndex((t) => t === title);
+          const summary = booksData.summaries[bookIndex];
+          const author = booksData.authors[bookIndex];
           const color = getRandomColor();
           return (
             <div
               key={index}
-              className="flex items-center justify-center gap-4 p-4 shadow-lg"
-              style={{ color: color }}
+              onClick={() => handleResultClick(title)}
+              className="bg-white cursor-pointer hover:opacity-60"
             >
-              <span className="material-symbols-outlined">auto_stories</span>
-              {title}
+              <div className="flex flex-col items-center justify-center gap-4 p-4 shadow-lg">
+                <div
+                  style={{ color: color }}
+                  className="flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined">
+                    auto_stories
+                  </span>
+                  {title}
+                </div>
+                <p className="text-xs md:text-sm">{summary.summary}</p>
+                <p style={{ color: color }} className="text-xs md:text-sm">
+                  {author.author}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="grid gap-6 md:gap-12 md:grid-cols-4">
+        {selectedBooks.map((title, index) => {
+          const bookIndex = booksData.titles.findIndex((t) => t === title);
+          const summary = booksData.summaries[bookIndex];
+          const author = booksData.authors[bookIndex];
+          const color = getRandomColor();
+          return (
+            <div key={index} className="bg-white hover:opacity-60">
+              <div className="flex flex-col items-center justify-center gap-4 p-4 shadow-lg">
+                <div
+                  style={{ color: color }}
+                  className="flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined">
+                    auto_stories
+                  </span>
+                  {title}
+                </div>
+                <p className="text-xs md:text-sm">{summary.summary}</p>
+                <p style={{ color: color }} className="text-xs md:text-sm">
+                  {author.author}
+                </p>
+              </div>
             </div>
           );
         })}
