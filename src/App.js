@@ -4,7 +4,6 @@ import data from "./data.json";
 
 const App = () => {
   const [booksData, setBooksData] = useState({});
-  const [booksSummary, setBookSummary] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedBooks, setSelectedBooks] = useState([]);
@@ -20,7 +19,6 @@ const App = () => {
 
   useEffect(() => {
     setBooksData(data);
-    setBookSummary(data.summaries);
   }, []);
 
   const handleInputChange = (e) => {
